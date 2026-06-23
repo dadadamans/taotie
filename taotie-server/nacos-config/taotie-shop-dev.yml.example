@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/sky_take_out?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      username: CHANGE_ME
+      password: CHANGE_ME
+  redis:
+    host: localhost
+    port: 6379
+    password: CHANGE_ME
+    database: 10
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.taotie.entity
+  configuration:
+    map-underscore-to-camel-case: true

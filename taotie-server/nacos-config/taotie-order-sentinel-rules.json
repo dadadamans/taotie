@@ -1,0 +1,14 @@
+[
+  {
+    "resource": "/user/order/submit",
+    "grade": 1,
+    "count": 20,
+    "controlBehavior": 0
+  },
+  {
+    "resource": "/user/order/payment",
+    "grade": 1,
+    "count": 5,
+    "controlBehavior": 0
+  }
+]

@@ -1,0 +1,19 @@
+**/target/
+.idea
+*.iml
+*.class
+*Test.java
+**/test/
+苍穹外卖微服务重构学习方案.md
+
+# 旧单体服务模块（已废弃）
+taotie-server/
+
+# Nacos 实际配置（脱敏模板提交）
+nacos-config/taotie-*-dev.yml
+
+# 测试脚本/无用文件
+test-api.sh
+test-api.http
+test-sentinel.sh
+h\ origin\ recover-*

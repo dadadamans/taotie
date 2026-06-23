@@ -3,12 +3,13 @@
   "project": "taotie",
   "context_dir": "docs/agent_context",
   "current_task": "task001",
-  "current_stage": "init",
-  "status": "running",
+  "current_stage": "paused",
+  "status": "awaiting_human",
   "iteration": 0,
   "last_decision": null,
-  "next_agent": "planner",
+  "next_agent": "human",
   "max_revisions_per_task": 3,
   "agent_sessions": {},
-  "updated_at": "2026-06-23T11:46:35.946025+00:00"
+  "updated_at": "2026-06-23T11:49:07.825807+00:00",
+  "dirty_worktree_at_start": "M taotie-server"
 }

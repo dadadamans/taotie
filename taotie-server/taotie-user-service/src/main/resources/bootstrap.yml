@@ -1,0 +1,17 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: taotie-user # 👈 记得改成各自的服务名
+  main:
+    allow-circular-references: true # 统统放行循环依赖
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_SERVER:127.0.0.1:8848}
+      config:
+        server-addr: ${NACOS_SERVER:127.0.0.1:8848}
+        file-extension: yml
+  profiles:
+    active: dev

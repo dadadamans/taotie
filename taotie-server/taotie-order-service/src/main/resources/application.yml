@@ -1,0 +1,30 @@
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.taotie.entity
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %green([%X{traceId}]) %magenta([%thread]) %-5level %logger{36} : %msg%n"
+  level:
+    com.taotie: debug
+
+spring:
+  cloud:
+    sentinel:
+      datasource:
+        degrade-rules:
+          nacos:
+            server-addr: ${NACOS_SERVER:localhost:8848}
+            data-id: taotie-order-sentinel-degrade-rules
+            group-id: DEFAULT_GROUP
+            data-type: json
+            rule-type: degrade
+        system-rules:
+          nacos:
+            server-addr: ${NACOS_SERVER:localhost:8848}
+            data-id: taotie-order-sentinel-system-rules
+            group-id: DEFAULT_GROUP
+            data-type: json
+            rule-type: system``

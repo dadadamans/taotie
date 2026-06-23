@@ -1,0 +1,164 @@
+version: "3.8"
+
+networks:
+  sky-net:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  redis-data:
+
+services:
+  # ==================== 基础设施 ====================
+  mysql:
+    image: mysql:8.0
+    container_name: sky-mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./init-sql:/docker-entrypoint-initdb.d
+    networks:
+      - sky-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  redis:
+    image: redis:7-alpine
+    container_name: sky-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - sky-net
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: sky-rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - sky-net
+
+  # ==================== Nacos ====================
+  nacos:
+    image: nacos/nacos-server:v2.2.3
+    container_name: sky-nacos
+    restart: always
+    ports:
+      - "8848:8848"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      MODE: standalone
+      PREFER_HOST_MODE: hostname
+      NACOS_SERVER_PORT: 8848
+      MYSQL_SERVICE_HOST: mysql
+      MYSQL_SERVICE_PORT: 3306
+      MYSQL_SERVICE_DB_NAME: nacos_config
+      MYSQL_SERVICE_USER: root
+      MYSQL_SERVICE_PASSWORD: root
+      MYSQL_SERVICE_DB_PARAM: characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&serverTimezone=Asia/Shanghai
+      NACOS_AUTH_ENABLE: "false"
+      JVM_XMS: 256m
+      JVM_XMX: 512m
+    networks:
+      - sky-net
+
+  # ==================== Nacos 配置初始化（一次性） ====================
+  nacos-init:
+    image: alpine:3.18
+    container_name: sky-nacos-init
+    depends_on:
+      - nacos
+    volumes:
+      - ./nacos-config:/nacos-config
+    command: ["/bin/sh", "/nacos-config/init.sh"]
+    networks:
+      - sky-net
+    restart: "no"
+
+  # ==================== 微服务 ====================
+  taotie-gateway:
+    build:
+      context: .
+      dockerfile: taotie-gateway/Dockerfile
+    container_name: taotie-gateway
+    restart: always
+    ports:
+      - "10000:10000"
+    depends_on:
+      nacos-init:
+        condition: service_completed_successfully
+    environment:
+      NACOS_SERVER: nacos:8848
+    networks:
+      - sky-net
+
+  sky-auth:
+    build:
+      context: .
+      dockerfile: taotie-auth-service/Dockerfile
+    container_name: sky-auth
+    restart: always
+    depends_on:
+      nacos-init:
+        condition: service_completed_successfully
+    environment:
+      NACOS_SERVER: nacos:8848
+    networks:
+      - sky-net
+
+  sky-user:
+    build:
+      context: .
+      dockerfile: taotie-user-service/Dockerfile
+    container_name: sky-user
+    restart: always
+    depends_on:
+      nacos-init:
+        condition: service_completed_successfully
+    environment:
+      NACOS_SERVER: nacos:8848
+    networks:
+      - sky-net
+
+  sky-shop:
+    build:
+      context: .
+      dockerfile: taotie-shop-service/Dockerfile
+    container_name: sky-shop
+    restart: always
+    depends_on:
+      nacos-init:
+        condition: service_completed_successfully
+    environment:
+      NACOS_SERVER: nacos:8848
+    networks:
+      - sky-net
+
+  sky-order:
+    build:
+      context: .
+      dockerfile: taotie-order-service/Dockerfile
+    container_name: sky-order
+    restart: always
+    depends_on:
+      nacos-init:
+        condition: service_completed_successfully
+    environment:
+      NACOS_SERVER: nacos:8848
+    networks:
+      - sky-net

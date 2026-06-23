@@ -1,0 +1,19 @@
+server:
+  port: 10000 # 网关统一入口端口
+
+spring:
+  application:
+    name: taotie-gateway # 网关服务名
+
+  main:
+    allow-circular-references: true # 养成好习惯，网关也加上防卡死
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_SERVER:127.0.0.1:8848}
+      config:
+        server-addr: ${NACOS_SERVER:127.0.0.1:8848}
+        file-extension: yml
+  profiles:
+    active: dev

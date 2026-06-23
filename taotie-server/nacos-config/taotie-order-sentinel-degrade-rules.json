@@ -1,0 +1,51 @@
+[
+  {
+    "resource": "DishClient#getById(Long)",
+    "count": 0.5,
+    "grade": 1,
+    "timeWindow": 10,
+    "minRequestAmount": 5
+  },
+  {
+    "resource": "DishClient#countByStatus(Integer)",
+    "count": 0.5,
+    "grade": 1,
+    "timeWindow": 10,
+    "minRequestAmount": 5
+  },
+  {
+    "resource": "SetmealClient#getById(Long)",
+    "count": 0.5,
+    "grade": 1,
+    "timeWindow": 10,
+    "minRequestAmount": 5
+  },
+  {
+    "resource": "SetmealClient#countByStatus(Integer)",
+    "count": 0.5,
+    "grade": 1,
+    "timeWindow": 10,
+    "minRequestAmount": 5
+  },
+  {
+    "resource": "UserClient#getById(Long)",
+    "count": 0.5,
+    "grade": 1,
+    "timeWindow": 10,
+    "minRequestAmount": 5
+  },
+  {
+    "resource": "UserClient#getAddressBookById(Long)",
+    "count": 0.5,
+    "grade": 1,
+    "timeWindow": 10,
+    "minRequestAmount": 5
+  },
+  {
+    "resource": "ShoppingCartClient#list()",
+    "count": 0.5,
+    "grade": 1,
+    "timeWindow": 10,
+    "minRequestAmount": 5
+  }
+]

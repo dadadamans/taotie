@@ -1,0 +1,19 @@
+server:
+  port: 8084 # 独立端口依然留着
+
+spring:
+  application:
+    name: taotie-order # 告诉 Nacos 我叫什么名字
+
+  main:
+    allow-circular-references: true
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_SERVER:127.0.0.1:8848}
+      config:
+        server-addr: ${NACOS_SERVER:127.0.0.1:8848}
+        file-extension: yml         # 远端配置文件后缀（注意没有 a）
+  profiles:
+    active: dev # 激活开发环境

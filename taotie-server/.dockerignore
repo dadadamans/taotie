@@ -1,0 +1,13 @@
+.git
+.gitignore
+.idea
+sky-server/src
+sky-server/target
+**/target
+**/*.iml
+**/.mvn
+**/agignore
+test-api.http
+test-api.sh
+test-sentinel.sh
+苍穹外卖微服务重构学习方案.md

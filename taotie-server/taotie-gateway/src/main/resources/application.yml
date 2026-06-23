@@ -1,0 +1,67 @@
+logging:
+  level:
+    root: info
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: WARN
+    org.springframework.http.server.reactive: INFO
+    org.springframework.web.reactive: INFO
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      default-filters:
+        - AddRequestHeader=X-Internal-Secret, bigold-secret-999999
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
+      routes:
+        - id: taotie-auth-route
+          uri: lb://taotie-auth
+          predicates:
+            - Path=/admin/employee/login, /admin/employee/logout, /user/user/login
+        - id: taotie-user-route
+          uri: lb://taotie-user
+          predicates:
+            - Path=/admin/employee/**, /user/addressBook/**, /user/user/**
+        - id: taotie-shop-route
+          uri: lb://taotie-shop
+          predicates:
+            - Path=/admin/category/**, /user/category/**, /admin/dish/**, /user/dish/**, /admin/setmeal/**, /user/setmeal/**, /admin/common/**, /admin/shop/**, /user/shop/**
+        - id: taotie-order-route
+          uri: lb://taotie-order
+          predicates:
+            - Path=/admin/order/**, /user/order/**, /user/shoppingCart/**, /admin/report/**, /admin/workspace/**, /notify/**
+        - id: taotie-server-fallback-route
+          uri: lb://taotie-server
+          predicates:
+            - Path=/admin/**, /user/**
+
+    sentinel:
+      transport:
+        dashboard: ${SENTINEL_DASHBOARD:localhost:8858}
+        port: 8719
+      filter:
+        enabled: true
+      datasource:
+        gateway-flow:
+          nacos:
+            server-addr: ${NACOS_SERVER:localhost:8848}
+            data-id: taotie-gateway-sentinel-rules
+            group-id: DEFAULT_GROUP
+            data-type: json
+            rule-type: gw-flow
+        gateway-api-group:
+          nacos:
+            server-addr: ${NACOS_SERVER:localhost:8848}
+            data-id: taotie-gateway-api-groups
+            group-id: DEFAULT_GROUP
+            data-type: json
+            rule-type: gw-api-group
