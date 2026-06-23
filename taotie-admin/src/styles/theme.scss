@@ -1,0 +1,25 @@
+// Element Plus 主题 — CSS 变量覆盖
+// 在 _variables.scss 的 :root 中已定义品牌色
+// 这里补充 Element Plus 需要的色阶变量
+
+:root {
+  --el-color-primary: #6D28D9;
+  --el-color-primary-light-3: #8B5CF6;
+  --el-color-primary-light-5: #A78BFA;
+  --el-color-primary-light-7: #C4B5FD;
+  --el-color-primary-light-8: #DDD6FE;
+  --el-color-primary-light-9: #EDE9FE;
+  --el-color-primary-dark-2: #5B21B6;
+
+  --el-color-success: #10B981;
+  --el-color-warning: #F59E0B;
+  --el-color-danger: #EF4444;
+  --el-color-info: #3B82F6;
+
+  --el-border-radius-base: 8px;
+  --el-font-size-base: 14px;
+  --el-menu-bg-color: transparent;
+  --el-menu-text-color: #9CA3AF;
+  --el-menu-active-color: #6D28D9;
+  --el-menu-hover-bg-color: rgba(109, 40, 217, 0.15);
+}

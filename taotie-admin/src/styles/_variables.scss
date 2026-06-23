@@ -1,0 +1,59 @@
+// 饕餮外卖 品牌色系
+$color-primary: #6D28D9;
+$color-primary-hover: #5B21B6;
+$color-primary-light: #8B5CF6;
+$color-primary-bg: #F5F3FF;
+
+$color-accent: #F59E0B;
+$color-accent-hover: #D97706;
+$color-accent-bg: #FEF3C7;
+
+$color-sidebar-bg: #0C0A1D;
+$color-sidebar-hover: rgba(109, 40, 217, 0.15);
+$color-sidebar-active: rgba(109, 40, 217, 0.25);
+
+$color-bg: #f0f2f5;
+$color-card: #FFFFFF;
+
+$color-success: #10B981;
+$color-success-bg: #D1FAE5;
+$color-danger: #EF4444;
+$color-danger-bg: #FEE2E2;
+$color-warning: #F59E0B;
+$color-warning-bg: #FEF3C7;
+$color-info: #3B82F6;
+$color-info-bg: #DBEAFE;
+
+$color-text-primary: #1A1A2E;
+$color-text-secondary: #6B7280;
+$color-text-muted: #9CA3AF;
+
+$border-radius: 12px;
+$border-radius-sm: 8px;
+$box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+$box-shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.08);
+
+$sidebar-width: 260px;
+$sidebar-collapsed-width: 72px;
+$topbar-height: 60px;
+
+:root {
+  --color-primary: #{$color-primary};
+  --color-primary-hover: #{$color-primary-hover};
+  --color-primary-light: #{$color-primary-light};
+  --color-primary-bg: #{$color-primary-bg};
+  --color-accent: #{$color-accent};
+  --color-sidebar-bg: #{$color-sidebar-bg};
+  --color-bg: #{$color-bg};
+  --color-card: #{$color-card};
+  --color-success: #{$color-success};
+  --color-danger: #{$color-danger};
+  --color-warning: #{$color-warning};
+  --color-info: #{$color-info};
+  --color-text-primary: #{$color-text-primary};
+  --color-text-secondary: #{$color-text-secondary};
+  --border-radius: #{$border-radius};
+  --sidebar-width: #{$sidebar-width};
+  --sidebar-collapsed-width: #{$sidebar-collapsed-width};
+  --topbar-height: #{$topbar-height};
+}
