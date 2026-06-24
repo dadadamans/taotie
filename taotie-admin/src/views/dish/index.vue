@@ -85,14 +85,32 @@
       <el-empty v-if="!loading && list.length === 0" description="暂无菜品数据" />
     </div>
 
+    <ConfirmDialog
+      v-model="batchConfirmVisible"
+      type="warning"
+      title="确认批量删除？"
+      :description="`将删除 ${selectedIds.length} 个菜品，不可恢复`"
+      confirm-text="确认删除"
+      @confirm="confirmBatchDelete"
+    />
+
+    <ConfirmDialog
+      v-model="statusConfirmVisible"
+      type="warning"
+      :title="`确认${statusConfirmRow?.status === 1 ? '停售' : '起售'}该菜品？`"
+      confirm-text="确认"
+      @confirm="confirmStatusChange"
+    />
+
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { getDishPage, setDishStatus, deleteDish, getCategoryList } from '@/api/shop'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const router = useRouter()
 
@@ -105,6 +123,10 @@ const searchName = ref('')
 const selectedCategory = ref<number | undefined>(undefined)
 const selectedStatus = ref<number | undefined>(undefined)
 const categoryOptions = ref<{ id: number; name: string }[]>([])
+
+const batchConfirmVisible = ref(false)
+const statusConfirmVisible = ref(false)
+const statusConfirmRow = ref<any>(null)
 
 const queryParams = reactive({
   page: 1,
@@ -160,38 +182,33 @@ function handleSelectionChange(selection: any[]) {
   selectedIds.value = selection.map((item: any) => item.id)
 }
 
-async function handleBatchDelete() {
+function handleBatchDelete() {
   if (selectedIds.value.length === 0) return
-  try {
-    await ElMessageBox.confirm(
-      `确认删除选中的 ${selectedIds.value.length} 个菜品？`,
-      '批量删除',
-      { confirmButtonText: '确认删除', cancelButtonText: '取消', type: 'warning' },
-    )
-    const res = await deleteDish(selectedIds.value)
-    if (res.code === 1) {
-      ElMessage.success(`成功删除 ${selectedIds.value.length} 个菜品`)
-      selectedIds.value = []
-      if (list.value.length === 0 && queryParams.page > 1) queryParams.page--
-      fetchData()
-    }
-  } catch {}
+  batchConfirmVisible.value = true
 }
 
-async function handleStatusChange(row: any) {
-  try {
-    await ElMessageBox.confirm(
-      `确认${row.status === 1 ? '停售' : '起售'}该菜品？`,
-      '提示',
-      { type: 'warning' },
-    )
-    const newStatus = row.status === 1 ? 0 : 1
-    const res = await setDishStatus(newStatus, row.id)
-    if (res.code === 1) {
-      row.status = newStatus
-      ElMessage.success(newStatus === 1 ? '已起售' : '已停售')
-    }
-  } catch {}
+async function confirmBatchDelete() {
+  const res = await deleteDish(selectedIds.value)
+  if (res.code === 1) {
+    ElMessage.success(`成功删除 ${selectedIds.value.length} 个菜品`)
+    selectedIds.value = []
+    if (list.value.length === 0 && queryParams.page > 1) queryParams.page--
+    fetchData()
+  }
+}
+
+function handleStatusChange(row: any) {
+  statusConfirmRow.value = row
+  statusConfirmVisible.value = true
+}
+
+async function confirmStatusChange() {
+  const newStatus = statusConfirmRow.value.status === 1 ? 0 : 1
+  const res = await setDishStatus(newStatus, statusConfirmRow.value.id)
+  if (res.code === 1) {
+    statusConfirmRow.value.status = newStatus
+    ElMessage.success(newStatus === 1 ? '已起售' : '已停售')
+  }
 }
 
 function goEdit(id: number) { router.push(`/dish/form?id=${id}`) }

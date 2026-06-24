@@ -96,27 +96,44 @@
 
       <el-empty v-if="!loading && list.length === 0" description="暂无分类数据" />
     </div>
+    </div>
 
     <CategoryForm
-      v-model="drawerVisible"
-      :id="editId"
-      :type="activeType"
-      :edit-data="editRow"
-      @success="fetchData"
-    />
+    v-model="drawerVisible"
+    :id="editId"
+    :type="activeType"
+    :edit-data="editRow"
+    @success="fetchData"
+  />
 
-  </div>
+  <ConfirmDialog
+    v-model="statusConfirmVisible"
+    type="warning"
+    :title="`确认${statusConfirmRow?.status === 1 ? '禁用' : '启用'}该分类？`"
+    confirm-text="确认"
+    @confirm="confirmStatusChange"
+  />
+
+  <ConfirmDialog
+    v-model="deleteConfirmVisible"
+    type="danger"
+    title="确认删除该分类？"
+    description="删除后不可恢复"
+    confirm-text="确认删除"
+    @confirm="confirmDelete"
+  />
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import {
   getCategoryPage,
   deleteCategory,
   setCategoryStatus,
 } from '@/api/shop'
 import CategoryForm from './form.vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const loading = ref(false)
 const list = ref<any[]>([])
@@ -134,6 +151,10 @@ const queryParams = reactive({
 const drawerVisible = ref(false)
 const editId = ref<number | null>(null)
 const editRow = ref<any>(null)
+const deleteConfirmVisible = ref(false)
+const deleteId = ref<number>(0)
+const statusConfirmVisible = ref(false)
+const statusConfirmRow = ref<any>(null)
 
 async function fetchData() {
   loading.value = true
@@ -182,20 +203,18 @@ function handleCurrentChange(val: number) {
   fetchData()
 }
 
-async function handleStatusChange(row: any) {
-  try {
-    await ElMessageBox.confirm(
-      `确认${row.status === 1 ? '禁用' : '启用'}该分类？`,
-      '提示',
-      { type: 'warning' },
-    )
-    const newStatus = row.status === 1 ? 0 : 1
-    const res = await setCategoryStatus(newStatus, row.id)
-    if (res.code === 1) {
-      row.status = newStatus
-      ElMessage.success(newStatus === 1 ? '已启用' : '已禁用')
-    }
-  } catch {}
+function handleStatusChange(row: any) {
+  statusConfirmRow.value = row
+  statusConfirmVisible.value = true
+}
+
+async function confirmStatusChange() {
+  const newStatus = statusConfirmRow.value.status === 1 ? 0 : 1
+  const res = await setCategoryStatus(newStatus, statusConfirmRow.value.id)
+  if (res.code === 1) {
+    statusConfirmRow.value.status = newStatus
+    ElMessage.success(newStatus === 1 ? '已启用' : '已禁用')
+  }
 }
 
 function openAdd() {
@@ -211,18 +230,17 @@ function openEdit(row: any) {
 }
 
 function handleDelete(id: number) {
-  ElMessageBox.confirm('确认删除该分类？删除后不可恢复。', '删除确认', {
-    confirmButtonText: '确认删除',
-    cancelButtonText: '取消',
-    type: 'warning',
-  }).then(async () => {
-    const res = await deleteCategory(id)
-    if (res.code === 1) {
-      ElMessage.success('删除成功')
-      if (list.value.length === 1 && queryParams.page > 1) queryParams.page--
-      fetchData()
-    }
-  }).catch(() => {})
+  deleteId.value = id
+  deleteConfirmVisible.value = true
+}
+
+async function confirmDelete() {
+  const res = await deleteCategory(deleteId.value)
+  if (res.code === 1) {
+    ElMessage.success('删除成功')
+    if (list.value.length === 1 && queryParams.page > 1) queryParams.page--
+    fetchData()
+  }
 }
 
 onMounted(fetchData)

@@ -39,6 +39,9 @@ export function getDishById(id: number) {
 export function setDishStatus(status: number, id: number) {
   return request({ url: `/admin/dish/status/${status}`, method: 'post', params: { id } })
 }
+export function getDishList(params: { categoryId?: number; name?: string }) {
+  return request({ url: '/admin/dish/list', method: 'get', params })
+}
 
 // ---- 套餐 ----
 export function getSetmealPage(params: any) {

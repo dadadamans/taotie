@@ -126,14 +126,23 @@
       @success="fetchList"
     />
 
+    <ConfirmDialog
+      v-model="confirmVisible"
+      type="warning"
+      :title="`确认${confirmRow?.status === 1 ? '禁用' : '启用'}该员工？`"
+      confirm-text="确认"
+      @confirm="confirmToggleStatus"
+    />
+
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { getEmployeePage, setEmployeeStatus } from '@/api/employee'
 import EmployeeDrawer from './form.vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const loading = ref(false)
 const list = ref<any[]>([])
@@ -141,6 +150,8 @@ const total = ref(0)
 
 const drawerVisible = ref(false)
 const currentId = ref<number | null>(null)
+const confirmVisible = ref(false)
+const confirmRow = ref<any>(null)
 
 const query = reactive({
   page: 1,
@@ -185,18 +196,17 @@ function reset() {
   fetchList()
 }
 
-async function toggleStatus(row: any) {
-  try {
-    await ElMessageBox.confirm('确认修改状态？', '提示', {
-      type: 'warning'
-    })
+function toggleStatus(row: any) {
+  confirmRow.value = row
+  confirmVisible.value = true
+}
 
-    const newStatus = row.status === 1 ? 0 : 1
-    await setEmployeeStatus(row.id, newStatus)
-
-    row.status = newStatus
-    ElMessage.success('更新成功')
-  } catch {}
+async function confirmToggleStatus() {
+  if (!confirmRow.value) return
+  const newStatus = confirmRow.value.status === 1 ? 0 : 1
+  await setEmployeeStatus(confirmRow.value.id, newStatus)
+  confirmRow.value.status = newStatus
+  ElMessage.success('更新成功')
 }
 
 onMounted(fetchList)

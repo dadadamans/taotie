@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { useAppStore } from '@/stores/app'
 import { useUserStore } from '@/stores/user'
 import { getShopStatus, setShopStatus } from '@/api/shop'
 import { editPassword } from '@/api/employee'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const appStore = useAppStore()
 const userStore = useUserStore()
@@ -48,6 +49,7 @@ const chatVisible = ref(false)
 
 // ---- 修改密码 ----
 const pwdDialogVisible = ref(false)
+const logoutDialogVisible = ref(false)
 const pwdForm = ref({ empId: 0, oldPassword: '', newPassword: '', confirmPassword: '' })
 const pwdLoading = ref(false)
 async function handlePwdSave() {
@@ -81,14 +83,12 @@ async function handlePwdSave() {
 }
 
 function handleLogout() {
-  ElMessageBox.confirm('确认退出登录？', '退出', {
-    confirmButtonText: '退出',
-    cancelButtonText: '取消',
-    type: 'info',
-  }).then(() => {
-    userStore.logout()
-    router.push('/login')
-  }).catch(() => {})
+  logoutDialogVisible.value = true
+}
+
+function confirmLogout() {
+  userStore.logout()
+  router.push('/login')
 }
 
 onMounted(() => {
@@ -249,6 +249,15 @@ onMounted(() => {
       <el-button type="primary" :loading="pwdLoading" @click="handlePwdSave">确定</el-button>
     </template>
   </el-dialog>
+
+  <ConfirmDialog
+    v-model="logoutDialogVisible"
+    type="info"
+    title="确认退出登录？"
+    description="退出后需要重新登录"
+    confirm-text="退出"
+    @confirm="confirmLogout"
+  />
 </template>
 
 <style lang="scss" scoped>
